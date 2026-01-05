@@ -23,6 +23,7 @@
   "homepage": "https://github.com/interplaynetary/councils#readme",
   "dependencies": {
     "@types/node": "^25.0.3",
+    "capnweb": "^0.4.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.0",

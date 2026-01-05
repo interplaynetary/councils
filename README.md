@@ -26,13 +26,15 @@ At its core, it enables groups (councils) to make decisions that affect both the
 - **Modern**: Async iterators for handling proposal lifecycles.
 
 ## Quick Start
-```bash
-# Install dependencies
-npm install
+## Deployment
 
-# Run dev server
-npm run dev
+### GitHub Pages
+This project is configured to deploy to GitHub Pages via GitHub Actions.
 
-# Build for production
-npm run build
-```
+**IMPORTANT Configuration Step:**
+1. Go to your repository **Settings**.
+2. Navigate to **Pages** (in the left sidebar).
+3. Under **Build and deployment** > **Source**, select **GitHub Actions** from the dropdown menu.
+   *(It might be set to "Deploy from a branch" by default)*.
+
+Once this is set, the `Deploy to GitHub Pages` workflow defined in `.github/workflows/deploy-councils.yml` will automatically build the project and deploy the `dist/` folder whenever you push to `main`.
