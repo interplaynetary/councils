@@ -7,8 +7,9 @@ import { z } from 'zod';
 // Action Schema
 const ActionSchema = z.object({
     description: z.string(),
-    methodName: z.string().optional(),
+    methodName: z.string().optional(), // If missing, maybe it's just a text proposal?
     methodArgs: z.array(z.any()).default([]),
+    target: z.any().optional() // The Capability to execute upon (Generic)
 });
 export type Action = z.infer<typeof ActionSchema>;
 

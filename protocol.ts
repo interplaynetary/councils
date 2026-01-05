@@ -25,6 +25,11 @@ export interface ProposalInfo {
 export interface IProposalRef {
     getInfo(): Promise<ProposalInfo>;
     getStatus(): Promise<ProposalStatus>;
+    /**
+     * Revoke any capabilities granted by this proposal.
+     * Useful if the proposal contains sensitive actions (like cross-council calls).
+     */
+    revokeGrants(): Promise<void>;
 }
 
 /**
@@ -53,11 +58,10 @@ export interface IMember {
     getVote(proposal: IProposalRef): Promise<VoteDecision | undefined>;
 
     /**
-     * Delegate voting power to another council's member.
-     * @param targetCouncil The council to delegate to (passed as capability if needed, or by name/ID?)
-     * Note: In a fully distributed system, targetCouncil might be an ICouncil reference.
+     * Delegate voting power to another member in this council.
+     * @param delegateName The name of the member to delegate to.
      */
-    delegate(targetCouncil: ICouncil, delegateName: string): Promise<void>;
+    delegate(delegateName: string): Promise<void>;
 
     /**
      * Get info about this member (name, voting power).
@@ -91,4 +95,19 @@ export interface ICouncil {
      * Get general info about the council
      */
     getName(): Promise<string>;
+
+    /**
+     * Get list of members in the council (Public discovery).
+     */
+    getMembers(): Promise<MemberInfo[]>;
+
+    /**
+     * Post a public message to the council's feed (Execution side-effect).
+     */
+    postMessage(content: string): Promise<void>;
+
+    /**
+     * Get the council's public message feed.
+     */
+    getMessages(): Promise<string[]>;
 }

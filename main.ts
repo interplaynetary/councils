@@ -29,6 +29,7 @@ async function initializeTestData() {
     councils.set('councilB', serverB);
 
     serverInstances.set('councilA', serverA); // Keep ref for strict local debugging if needed
+    serverInstances.set('councilB', serverB);
 
     // Bootstrap Data via RPC calls!
     // 1. Join and create members
@@ -46,9 +47,43 @@ async function initializeTestData() {
     ];
 
     for (const desc of proposals) {
-        // Pipelining! We propose and immediately log, we don't even have to await the creation to start the next one
         await aliceSession.propose(desc, []);
     }
+
+    // NEW: Real Execution Verification Proposal
+    // AUTOMATIC SECURITY: We just pass the capability. The SERVER wraps it in a revocable proxy upon proposal creation.
+    await aliceSession.propose("Send Greetings to Farmers Council", [
+        {
+            description: "Post a message to the Farmers Council feed",
+            methodName: 'postMessage',
+            methodArgs: ['Hello from the Workers Council! We stand in solidarity.'],
+            target: serverB // PASSING THE CAPABILITY DIRECTLY!
+        }
+    ]);
+
+    const farmerProposals = [
+        "Transition large-scale monoculture to permaculture food forests",
+        "Establish local seed banks and coordinate planting cycles"
+    ];
+
+    for (const desc of farmerProposals) {
+        await farmerSession.propose(desc, []);
+    }
+
+    // 4. Security Verification: Revocation
+    console.log("--- Security Verification: Revoking Malory ---");
+    const malorySession = await serverA.join('Malory');
+
+    // Revoke!
+    serverA.revokeMember('Malory');
+
+    try {
+        await malorySession.propose("I am still here", []);
+        console.error("SECURITY FAIL: Malory could still propose!");
+    } catch (e) {
+        console.log("SECURITY SUCCESS: Malory's session is revoked.", e);
+    }
+    console.log("----------------------------------------------");
 
     // 3. Bob votes on them
     const proposalRefs = await serverA.getProposals();
@@ -91,22 +126,16 @@ async function updateUIState() {
         dashboard.style.display = 'none';
         proposals.style.display = 'grid';
 
-        // Populate members if needed (In this distributed model, we don't "list" all members easily)
-        // We only show WHO WE ARE.
-        // For the demo, let's hardcode a "Switch Identity" feature or list known members by hack
+        // Populate members via RPC (Honest Discovery)
+        const members = await currentCouncil.getMembers();
+        memberSelect.innerHTML = '<option value="">Select Identity</option>';
 
-        // HACK: for demo, we grab the local server instance to list members
-        // In real app, you'd login.
-        const server = serverInstances.get((document.getElementById('councilSelect') as HTMLSelectElement).value);
-        if (server) {
-            memberSelect.innerHTML = '<option value="">Select Identity</option>';
-            server.members.forEach((m: any) => {
-                const opt = document.createElement('option');
-                opt.value = m.name;
-                opt.textContent = m.name;
-                if (m.name === currentMemberName) opt.selected = true;
-                memberSelect.appendChild(opt);
-            });
+        for (const m of members) {
+            const opt = document.createElement('option');
+            opt.value = m.name;
+            opt.textContent = `${m.name} (Power: ${m.votingPower})`;
+            if (m.name === currentMemberName) opt.selected = true;
+            memberSelect.appendChild(opt);
         }
     }
 }
@@ -117,17 +146,23 @@ async function renderCouncilDashboard() {
 
     for (const [id, council] of councils.entries()) {
         const name = await council.getName();
-        // We can't easily get member count via pure RPC unless we add getInfo() to ICouncil.
-        // Let's add that to protocol later. For now, we mock or omit specific stats.
+        // Honest discovery mechanics
+        const members = await council.getMembers();
+        const messages = await council.getMessages();
 
         const card = document.createElement('div');
         card.className = 'council-summary-card';
         card.onclick = () => (window as any).selectCouncilFromDashboard(id);
 
+        const msgHtml = messages.length > 0
+            ? `<div class="messages"><strong>Latest:</strong> ${messages[messages.length - 1]}</div>`
+            : `<div class="messages"><em>No public messages</em></div>`;
+
         card.innerHTML = `
             <h3>${name}</h3>
             <div class="council-stats">
-               <div>Connect to View Stats</div>
+               <div>${members.length} Members</div>
+               ${msgHtml}
             </div>
         `;
         dashboard.appendChild(card);
