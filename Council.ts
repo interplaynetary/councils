@@ -31,6 +31,14 @@ const VoteStatusSchema = z.object({
     no: z.number(),
 });
 
+export const ProposalStatusSchema = z.object({
+    description: z.string(),
+    votes: VoteStatusSchema,
+    quorum: z.number(),
+    proposal: z.any()
+});
+export type ProposalStatus = z.infer<typeof ProposalStatusSchema>;
+
 // ==========================================
 // Interfaces (for class structure)
 // ==========================================
