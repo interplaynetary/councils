@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +8,10 @@
     <link rel="stylesheet" href="council.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
+
 <body>
     <div class="header">
-        <h1>Settings</h1>
+        <h1 onclick="window.resetView()" style="cursor: pointer;">Settings</h1>
         <div class="controls">
             <select id="councilSelect" onchange="window.loadCouncilData()">
                 <option value="">Select Council</option>
@@ -25,6 +27,11 @@
         <!-- Proposals will be dynamically added here -->
     </div>
 
+    <!-- Council Dashboard -->
+    <div id="council-dashboard" class="council-dashboard" style="display: none;">
+        <!-- Council cards will be added here -->
+    </div>
+
     <!-- Add this modal HTML just before the script tag -->
     <div id="proposalModal" class="modal">
         <div class="modal-content">
@@ -34,7 +41,7 @@
                     <label for="description">Description:</label>
                     <textarea id="description" required></textarea>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Actions:</label>
                     <div class="action-inputs">
@@ -45,12 +52,12 @@
                             <option value="addProposal">Add Proposal</option>
                             <option value="castVote">Cast Vote</option>
                         </select>
-                        
+
                         <!-- Dynamic fields based on action type -->
                         <div id="actionFields" class="hidden">
                             <!-- Fields will be dynamically added here -->
                         </div>
-                        
+
                         <button type="button" id="addAction">+ Add</button>
                     </div>
                 </div>
@@ -64,7 +71,7 @@
     </div>
 
     <script type="module">
-        import { createCouncil } from './Council.js';
+        import { createCouncil } from './Council.ts';
 
         let currentCouncil = null;
         let currentMember = null;  // Add this to track current member
@@ -82,7 +89,7 @@
             const member1 = bootstrapA.addMember('Worker 1');
             const member2 = bootstrapA.addMember('Worker 2');
             const member3 = bootstrapA.addMember('Worker 3');
-            
+
             const bootstrapB = councilB.bootstrap();
             const memberB1 = bootstrapB.addMember('Farmer 1');
             const memberB2 = bootstrapB.addMember('Farmer 2');
@@ -105,7 +112,7 @@
                 "Cancel all debt held by previous power structures and financial institutions to enable economic reset.",
                 "Restructure the banking system under democratic community control to serve common interests rather than private profit.",
                 "Ensure community security through universal training and democratic control of defense forces, preventing power concentration.",
-                "Ensure media independence through community ownership of communication infrastructure.",
+                "Ensure media independence through distributed, peer to peer, secure communication infrastructure.",
                 "Provide accessible community spaces with modern facilities for public gatherings and democratic participation.",
                 "Provide community workshops, shared resources, and democratic access to creative spaces.",
                 "Establish a network of freely-associating community health centers combining preventive care, traditional wisdom, and modern medicine.",
@@ -162,12 +169,12 @@
             });
 
             // Add relevant agricultural proposals to Farmers Council
-            const farmerProposals = proposals.filter(p => 
-                p.toLowerCase().includes('farm') || 
-                p.toLowerCase().includes('land') || 
+            const farmerProposals = proposals.filter(p =>
+                p.toLowerCase().includes('farm') ||
+                p.toLowerCase().includes('land') ||
                 p.toLowerCase().includes('agricultur')
             );
-            
+
             farmerProposals.forEach(proposal => {
                 councilB.addProposal(proposal);
             });
@@ -188,7 +195,7 @@
         function initializeCouncils() {
             const select = document.getElementById('councilSelect');
             select.innerHTML = '<option value="">Select Council</option>';
-            
+
             for (const [id, data] of councils.entries()) {
                 const option = document.createElement('option');
                 option.value = id;
@@ -202,18 +209,65 @@
 
         function updateUIState() {
             const memberSelect = document.getElementById('memberSelect');
-            const hasValidMember = memberSelect.value !== '';  // Check if a member is actually selected
+            const hasValidMember = memberSelect.value !== '';
+            const dashboard = document.getElementById('council-dashboard');
+            const proposals = document.getElementById('proposals');
+            const addBtn = document.querySelector('.add-proposal');
 
-            if (!currentCouncil || !hasValidMember) {
-                // Hide proposal cards and add button if no council or no member selected
-                $('.proposals').hide();
-                $('.add-proposal').hide();
+            if (!currentCouncil) {
+                // Show dashboard, hide proposals
+                dashboard.style.display = 'grid';
+                proposals.style.display = 'none';
+                addBtn.style.display = 'none';
+                renderCouncilDashboard();
+            } else if (!hasValidMember) {
+                // Council selected but no member: hide everything except header controls
+                dashboard.style.display = 'none';
+                proposals.style.display = 'none';
+                addBtn.style.display = 'none';
             } else {
-                // Show everything when both council and member are selected
-                $('.proposals').show();
-                $('.add-proposal').show();
+                // Show proposals
+                dashboard.style.display = 'none';
+                proposals.style.display = 'grid'; // grid as per css
+                addBtn.style.display = 'flex'; // flex as per css
             }
         }
+
+        function renderCouncilDashboard() {
+            const dashboard = document.getElementById('council-dashboard');
+            dashboard.innerHTML = '';
+
+            for (const [id, data] of councils.entries()) {
+                const card = document.createElement('div');
+                card.className = 'council-summary-card';
+                card.onclick = () => selectCouncilFromDashboard(id);
+
+                card.innerHTML = `
+                    <h3>${data.council.name}</h3>
+                    <div class="council-stats">
+                        <div class="stat-row">
+                            <span class="stat-label">Members</span>
+                            <span class="stat-value">${data.members.length}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Proposals</span>
+                            <span class="stat-value">${data.council.proposals.length}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Delegates</span>
+                            <span class="stat-value">${data.council.delegates.length}</span>
+                        </div>
+                    </div>
+                `;
+                dashboard.appendChild(card);
+            }
+        }
+
+        window.selectCouncilFromDashboard = function (councilId) {
+            const select = document.getElementById('councilSelect');
+            select.value = councilId;
+            loadCouncilData();
+        };
 
         async function loadCouncilData() {
             const councilId = document.getElementById('councilSelect').value;
@@ -225,11 +279,11 @@
             }
 
             currentCouncil = await getCouncil(councilId);
-            
+
             // Update member dropdown
             const memberSelect = document.getElementById('memberSelect');
             memberSelect.innerHTML = '<option value="">Select Member</option>';
-            
+
             const councilData = councils.get(councilId);
             councilData.members.forEach((member, index) => {
                 const option = document.createElement('option');
@@ -248,11 +302,11 @@
         function selectMember() {
             const councilId = document.getElementById('councilSelect').value;
             const memberIndex = document.getElementById('memberSelect').value;
-            
+
             if (councilId && memberIndex !== '') {
                 const councilData = councils.get(councilId);
                 currentMember = councilData.members[memberIndex];
-                
+
                 // Update the member dropdown to reflect the current selection
                 const memberSelect = document.getElementById('memberSelect');
                 Array.from(memberSelect.options).forEach(option => {
@@ -261,7 +315,7 @@
             } else {
                 currentMember = null;
             }
-            
+
             updateUIState();
             if (currentMember) {
                 updateProposals();
@@ -286,15 +340,15 @@
 
         function createProposalCard(status) {
             const card = document.createElement('div');
-            
+
             // Check if current member has voted
             const currentVote = Array.from(status.proposal.votes.entries())
                 .find(([voter, _]) => voter === currentMember)?.[1];
-            
+
             // Set classes based on vote status
             const votedClass = currentVote ? `voted-${currentVote}` : '';
             card.className = `proposal-card ${getStatusClass(status)} ${votedClass}`;
-            
+
             // Format actions for display
             let actionsHtml = '';
             if (status.proposal.actions && status.proposal.actions.size > 0) {
@@ -306,7 +360,7 @@
                             <span class="action-args">${action.methodArgs.join(', ')}</span>
                         </div>
                     `).join('');
-                
+
                 actionsHtml = `
                     <div class="proposal-actions">
                         <h4>Actions:</h4>
@@ -314,7 +368,7 @@
                     </div>
                 `;
             }
-            
+
             card.innerHTML = `
                 <div class="proposal-header">
                     <h3>${status.description}</h3>
@@ -332,14 +386,14 @@
             card.addEventListener('click', async (e) => {
                 // Don't handle clicks on action items
                 if (e.target.closest('.action-item')) return;
-                
+
                 const checkbox = card.querySelector('input[type="checkbox"]');
                 const newVote = checkbox.checked ? 'no' : 'yes';  // Toggle between yes/no
                 checkbox.checked = newVote === 'yes';             // Update checkbox based on vote
-                
+
                 // Update the voted class immediately for visual feedback
                 card.className = `proposal-card ${getStatusClass(status)} voted-${newVote}`;
-                
+
                 await handleVoteChange({
                     target: {
                         dataset: { proposal: status.description },
@@ -355,7 +409,7 @@
         function getStatusClass(status) {
             // Calculate total votes
             const totalVotes = status.votes.yes + status.votes.no;
-            
+
             // A proposal is approved if yes votes exceed 50% of total voting power
             if (status.votes.yes >= status.quorum) {
                 return 'approved';
@@ -378,7 +432,7 @@
                 console.log('Missing council or member:', { council: !!currentCouncil, member: !!currentMember });
                 return;
             }
-            
+
             try {
                 // Find the proposal by description
                 const proposal = currentCouncil.proposals.find(p => p.description === proposalId);
@@ -422,7 +476,7 @@
             actionFields.innerHTML = '';
             actionFields.className = actionType ? '' : 'hidden';
 
-            switch(actionType) {
+            switch (actionType) {
                 case 'addMember':
                     actionFields.innerHTML = `
                         <input type="text" placeholder="Member Name" required>
@@ -434,9 +488,9 @@
                         <input type="text" placeholder="Mandate Description" required>
                         <select id="targetCouncil" required>
                             <option value="">Select Target Council</option>
-                            ${Array.from(councils.entries()).map(([id, data]) => 
-                                `<option value="${id}">${data.council.name}</option>`
-                            ).join('')}
+                            ${Array.from(councils.entries()).map(([id, data]) =>
+                        `<option value="${id}">${data.council.name}</option>`
+                    ).join('')}
                         </select>
                     `;
                     break;
@@ -465,7 +519,7 @@
         document.getElementById('addAction').addEventListener('click', () => {
             const actionType = document.getElementById('actionType').value;
             if (!actionType) return;
-            
+
             // Save current action fields before adding new ones
             const fields = document.getElementById('actionFields');
             const actionData = collectActionData(actionType, fields);
@@ -475,7 +529,7 @@
                 document.getElementById('actionType').value = '';
                 fields.innerHTML = '';
                 fields.className = 'hidden';
-                
+
                 // Show added actions
                 updateActionsList();
             }
@@ -484,7 +538,7 @@
         document.getElementById('proposalForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const description = document.getElementById('description').value;
-            
+
             // Create actions map from collected actions
             const actions = new Map();
             proposalActions.forEach(action => {
@@ -494,11 +548,11 @@
                     methodArgs: action.methodArgs
                 });
             });
-            
+
             // Add the proposal
             currentCouncil.addProposal(description, actions);
             await updateProposals();
-            
+
             // Reset the form and actions
             proposalActions = [];
             closeProposalModal();
@@ -506,7 +560,7 @@
 
         // Helper to collect action data
         function collectActionData(type, fields) {
-            switch(type) {
+            switch (type) {
                 case 'addMember':
                     return {
                         memberName: fields.querySelector('input[placeholder="Member Name"]').value,
@@ -543,7 +597,7 @@
                     <button type="button" onclick="removeAction(${index})">×</button>
                 </div>
             `).join('');
-            
+
             const actionsContainer = document.querySelector('.action-inputs');
             const existingList = actionsContainer.querySelector('.added-actions');
             if (existingList) {
@@ -554,7 +608,7 @@
         }
 
         // Add function to remove actions
-        window.removeAction = function(index) {
+        window.removeAction = function (index) {
             proposalActions.splice(index, 1);
             updateActionsList();
         };
@@ -567,6 +621,14 @@
         window.selectMember = selectMember;
         window.closeProposalModal = closeProposalModal;
 
+        window.resetView = function () {
+            document.getElementById('councilSelect').value = '';
+            document.getElementById('memberSelect').innerHTML = '<option value="">Select Member</option>';
+            currentCouncil = null;
+            currentMember = null;
+            updateUIState();
+        };
+
         // Initialize the test data and page
         await initializeTestData();
         initializeCouncils();
@@ -576,4 +638,5 @@
         setInterval(updateProposals, 5000); // Update every 5 seconds
     </script>
 </body>
+
 </html>

@@ -1,9 +1,12 @@
 :root {
-    --green: #E0FFE0;  /* Lighter pastel green */
-    --yellow: #FFFBE6; /* Softer light yellow */
-    --red: #FFE6E6;    /* Softer light pink */
+    --green: #E0FFE0;
+    /* Lighter pastel green */
+    --yellow: #FFFBE6;
+    /* Softer light yellow */
+    --red: #FFE6E6;
+    /* Softer light pink */
     --gray: #f5f5f5;
-    
+
     /* Darker shades for toggles */
     --toggle-green: #4CAF50;
     --toggle-red: #f44336;
@@ -12,28 +15,36 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0;  /* Remove padding */
+    padding: 0;
+    /* Remove padding */
     background: var(--gray);
-    min-height: 101vh;  /* Ensure scrollbar always shows */
+    min-height: 101vh;
+    /* Ensure scrollbar always shows */
 }
 
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 32px 48px;  /* Double the padding */
+    padding: 32px 48px;
+    /* Double the padding */
     background: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    position: sticky;  /* Make it sticky */
-    top: 0;  /* Stick to very top */
-    z-index: 100;     /* Keep it above other content */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    /* Make it sticky */
+    top: 0;
+    /* Stick to very top */
+    z-index: 100;
+    /* Keep it above other content */
     margin-bottom: 24px;
-    border-radius: 0;  /* Remove border radius */
+    border-radius: 0;
+    /* Remove border radius */
 }
 
 h1 {
     margin: 0;
-    font-size: 36px;  /* Larger heading */
+    font-size: 36px;
+    /* Larger heading */
 }
 
 select {
@@ -43,7 +54,8 @@ select {
     font-size: 20px;
     color: black;
     background-color: white;
-    min-width: 240px;  /* Double the min-width */
+    min-width: 240px;
+    /* Double the min-width */
 }
 
 select option {
@@ -53,21 +65,25 @@ select option {
 
 .proposals {
     display: grid;
-    gap: 32px;      /* Double the gap */
+    gap: 32px;
+    /* Double the gap */
     grid-template-columns: 1fr;
-    padding: 48px;  /* Double the padding */
+    padding: 48px;
+    /* Double the padding */
 }
 
 .proposal-card {
     background: white;
-    padding: 40px;  /* Double the padding */
+    padding: 40px;
+    /* Double the padding */
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease;
     cursor: pointer;
     user-select: none;
     position: relative;
-    border: 4px solid transparent;  /* Add transparent border by default */
+    border: 4px solid transparent;
+    /* Add transparent border by default */
 }
 
 .proposal-card.approved {
@@ -92,7 +108,8 @@ select option {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 32px;      /* Double the gap */
+    gap: 32px;
+    /* Double the gap */
     margin-bottom: 24px;
     position: relative;
 }
@@ -104,14 +121,17 @@ select option {
     line-height: 1.5;
     flex: 1;
     word-wrap: break-word;
-    padding-right: 160px;  /* Double the padding */
+    padding-right: 160px;
+    /* Double the padding */
 }
 
 .toggle-switch {
     position: relative;
     display: inline-block;
-    width: 120px;   /* Double the width */
-    height: 64px;   /* Double the height */
+    width: 120px;
+    /* Double the width */
+    height: 64px;
+    /* Double the height */
     flex-shrink: 0;
     margin-top: 8px;
 }
@@ -137,7 +157,8 @@ select option {
 .slider:before {
     position: absolute;
     content: "";
-    height: 48px;   /* Double the size */
+    height: 48px;
+    /* Double the size */
     width: 48px;
     left: 8px;
     bottom: 8px;
@@ -146,16 +167,18 @@ select option {
     border-radius: 50%;
 }
 
-input:checked + .slider {
+input:checked+.slider {
     background-color: var(--toggle-green);
 }
 
-input:checked + .slider:before {
-    transform: translateX(56px);  /* Adjust for wider toggle */
+input:checked+.slider:before {
+    transform: translateX(56px);
+    /* Adjust for wider toggle */
 }
 
 .add-proposal {
-    width: 64px;    /* Double the size */
+    width: 64px;
+    /* Double the size */
     height: 64px;
     border-radius: 50%;
     background: var(--toggle-green);
@@ -179,11 +202,13 @@ input:checked + .slider:before {
     gap: 16px;
 }
 
-.proposals, .add-proposal {
+.proposals,
+.add-proposal {
     transition: opacity 0.3s ease;
 }
 
-.proposals.hidden, .add-proposal.hidden {
+.proposals.hidden,
+.add-proposal.hidden {
     opacity: 0;
     pointer-events: none;
 }
@@ -196,7 +221,7 @@ input:checked + .slider:before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 1000;
 }
 
@@ -207,7 +232,7 @@ input:checked + .slider:before {
     border-radius: 8px;
     width: 80%;
     max-width: 600px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .form-group {
@@ -274,7 +299,7 @@ input:checked + .slider:before {
 
 .added-actions {
     margin: 16px 0;
-    border-top: 1px solid rgba(0,0,0,0.1);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
     padding-top: 16px;
 }
 
@@ -284,7 +309,7 @@ input:checked + .slider:before {
     gap: 6px;
     padding: 4px 8px;
     font-size: 13px;
-    background: rgba(0,0,0,0.02);
+    background: rgba(0, 0, 0, 0.02);
     border-radius: 4px;
     margin-bottom: 4px;
     line-height: 1.4;
@@ -313,7 +338,7 @@ input:checked + .slider:before {
 .proposal-actions {
     margin-top: 24px;
     padding-top: 24px;
-    border-top: 1px solid rgba(0,0,0,0.1);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .proposal-actions h4 {
@@ -324,24 +349,28 @@ input:checked + .slider:before {
 }
 
 .proposal-actions .action-item {
-    display: inline-flex;  /* Changed to inline-flex */
+    display: inline-flex;
+    /* Changed to inline-flex */
     align-items: center;
     gap: 12px;
     padding: 8px 16px;
     font-size: 18px;
-    background: rgba(0,0,0,0.02);  /* Very subtle background */
+    background: rgba(0, 0, 0, 0.02);
+    /* Very subtle background */
     border-radius: 4px;
     margin-bottom: 8px;
     line-height: 1.4;
 }
 
 .action-target {
-    font-weight: 600;  /* Slightly bolder */
+    font-weight: 600;
+    /* Slightly bolder */
     color: #444;
 }
 
 .action-target::after {
-    content: "→";  /* Add arrow between target and method */
+    content: "→";
+    /* Add arrow between target and method */
     margin: 0 4px;
     color: #888;
 }
@@ -349,7 +378,8 @@ input:checked + .slider:before {
 .action-method {
     color: #666;
     font-family: monospace;
-    background: rgba(0,0,0,0.04);  /* Slightly darker than parent */
+    background: rgba(0, 0, 0, 0.04);
+    /* Slightly darker than parent */
     padding: 4px 8px;
     border-radius: 3px;
     font-size: 16px;
@@ -389,4 +419,57 @@ input:checked + .slider:before {
 
 .proposal-card.voted-no {
     box-shadow: 0 2px 8px rgba(244, 67, 54, 0.2);
+}
+
+/* Dashboard Styles */
+.council-dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 32px;
+    padding: 48px;
+}
+
+.council-summary-card {
+    background: white;
+    padding: 32px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #eee;
+}
+
+.council-summary-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.council-summary-card h3 {
+    margin: 0 0 24px 0;
+    font-size: 24px;
+    color: #333;
+    border-bottom: 2px solid var(--toggle-green);
+    padding-bottom: 12px;
+}
+
+.council-stats {
+    display: grid;
+    gap: 16px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+}
+
+.stat-label {
+    color: #666;
+}
+
+.stat-value {
+    font-weight: bold;
+    color: #333;
+    font-size: 20px;
 }
