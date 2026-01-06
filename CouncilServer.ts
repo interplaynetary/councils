@@ -1,6 +1,6 @@
 
 import { RpcTarget } from 'capnweb';
-import { ICouncil, IMember, IProposalRef, MemberInfo, ProposalInfo, VoteDecision, Action, ProposalStatus } from './protocol';
+import { ICouncil, IMember, IProposalRef, MemberInfo, ProposalInfo, VoteDecision, Action, ProposalStatus, IPublicIdentity } from './protocol';
 import * as Zod from 'zod';
 
 // Reuse Zod schemas from Council.ts if possible, or redefine simplified versions for internal logic
@@ -113,7 +113,8 @@ class MemberSession extends RpcTarget implements IMember {
     async getInfo(): Promise<MemberInfo> {
         return {
             name: this.member.name,
-            votingPower: this.member.calculateVotingPower()
+            votingPower: this.member.calculateVotingPower(),
+            identity: this.member.publicIdentity
         };
     }
 }
@@ -177,7 +178,8 @@ class Council extends RpcTarget implements ICouncil {
     async getMembers(): Promise<MemberInfo[]> {
         return this.members.map(m => ({
             name: m.name,
-            votingPower: m.calculateVotingPower()
+            votingPower: m.calculateVotingPower(),
+            identity: m.publicIdentity // The Cap!
         }));
     }
 
@@ -237,6 +239,7 @@ class ProposalRef extends RpcTarget implements IProposalRef {
     async getInfo(): Promise<ProposalInfo> {
         return {
             description: this.proposal.description,
+            actions: this.proposal.actions,
         };
     }
 
@@ -258,8 +261,20 @@ class ProposalRef extends RpcTarget implements IProposalRef {
 }
 
 // Internal classes (not RpcTargets themselves, just data/logic holders)
+class PublicIdentity extends RpcTarget implements IPublicIdentity {
+    constructor(private name: string) {
+        super();
+    }
+    async getName() { return this.name; }
+}
+
 class Member {
-    constructor(public name: string, public council: Council) { }
+    public publicIdentity: PublicIdentity;
+    public delegatedTo: Member | null = null;
+
+    constructor(public name: string, public council: Council) {
+        this.publicIdentity = new PublicIdentity(name);
+    }
 
     async vote(proposal: Proposal, decision: VoteDecision) {
         await proposal.registerVote(this, decision);
@@ -269,17 +284,19 @@ class Member {
         return proposal.votes.get(this);
     }
 
-    public delegatedTo: Member | null = null;
-
     delegateTo(name: string) {
         const delegate = this.council.members.find(m => m.name === name);
         if (!delegate) throw new Error("Delegate not found");
-        if (delegate === this) throw new Error("Cannot delegate to self");
-        // Simple cycle detection could go here
+
+        if (delegate === this) {
+            this.delegatedTo = null;
+            return;
+        }
 
         this.delegatedTo = delegate;
     }
 
+    // ... existing ... 
     calculateVotingPower(): number {
         // Base power (1) + power of anyone delegating TO me
         // Simple recursive, careful of cycles in prod

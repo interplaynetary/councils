@@ -10,26 +10,95 @@
 </head>
 
 <body>
-    <div class="header">
-        <h1 onclick="window.resetView()" style="cursor: pointer;">Settings</h1>
-        <div class="controls">
-            <select id="councilSelect" onchange="window.loadCouncilData()">
-                <option value="">Select Council</option>
-            </select>
-            <select id="memberSelect" onchange="window.selectMember()">
-                <option value="">Select Member</option>
-            </select>
-            <button class="add-proposal" onclick="window.addProposal()">+</button>
+    <!-- VIEW 1: Council Dashboard (Selector) -->
+    <div id="view-dashboard" class="council-dashboard">
+        <!-- Rendered by JS -->
+    </div>
+
+    <!-- VIEW 2: The Cockpit (Active Council Session) -->
+    <div id="view-cockpit" style="display: none; height: 100vh; flex-direction: column;">
+
+        <!-- Top: Identity Bar -->
+        <div class="identity-bar">
+            <div class="identity-left">
+                <div class="council-brand" id="activeCouncilName">Council Name</div>
+            </div>
+
+            <div class="identity-right">
+                <!-- Dropdown for fast switching (optional, or just back button) -->
+                <button onclick="window.resetView()"
+                    style="border:none; background:none; color:#666; cursor:pointer;">&larr; Exit</button>
+
+                <!-- User Badge -->
+                <div class="user-badge" id="userBadge" style="display:none; align-items: flex-end;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <div style="text-align:right;">
+                            <span class="user-name" id="displayUserName" style="display:block;">Alice</span>
+                            <span class="user-power" id="displayUserPower" style="font-size:11px; color:#888;">Power:
+                                1</span>
+                        </div>
+                        <button onclick="window.switchIdentity()"
+                            style="font-size:11px; padding:4px 8px; cursor:pointer;" title="Switch Identity">↻</button>
+                    </div>
+                </div>
+
+                <!-- Action -->
+                <button class="btn-delegate" id="btnDelegate" onclick="window.openDelegateModal()"
+                    style="display:none;">Delegate Power</button>
+
+                <!-- Login Selector (if not logged in) -->
+                <select id="memberSelect" onchange="window.selectMember()"
+                    style="min-width: 160px; padding: 8px; font-size: 14px;">
+                    <option value="">Login as Member...</option>
+                </select>
+            </div>
         </div>
-    </div>
 
-    <div id="proposals" class="proposals">
-        <!-- Proposals will be dynamically added here -->
-    </div>
+        <!-- Main Stage: 3 Columns -->
+        <div class="cockpit-stage">
 
-    <!-- Council Dashboard -->
-    <div id="council-dashboard" class="council-dashboard" style="display: none;">
-        <!-- Council cards will be added here -->
+            <!-- LEFT: Network -->
+            <div class="panel-network" id="panel-network">
+                <div class="panel-header">
+                    <span>Members</span>
+                    <span id="memberCount">0</span>
+                </div>
+                <div id="memberList" class="member-list">
+                    <!-- Populated by JS -->
+                </div>
+
+                <div style="height:1px; background:#eee; margin:20px 0;"></div>
+
+                <div class="panel-header">
+                    <span>My Contacts</span>
+                    <button class="icon-btn" onclick="window.addContact()" title="Add Contact"
+                        style="font-size:18px; cursor:pointer;">+</button>
+                </div>
+                <div id="contactList" class="member-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- CENTER: Work (Proposals) -->
+            <div class="panel-work" id="panel-work">
+                <div id="proposals" class="proposals">
+                    <!-- Proposal Cards go here -->
+                </div>
+                <div style="height: 100px;"></div> <!-- Spacer for FAB -->
+            </div>
+
+            <!-- RIGHT: Feed -->
+            <div class="panel-feed" id="panel-feed">
+                <div class="panel-header">Execution Feed</div>
+                <div id="executionFeed" class="feed-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- FAB for Proposals -->
+        <button class="add-proposal" onclick="window.addProposal()">+</button>
     </div>
 
     <!-- Add this modal HTML just before the script tag -->
@@ -44,29 +113,53 @@
 
                 <div class="form-group">
                     <label>Actions:</label>
+
+                    <!-- Added Actions Display -->
+                    <div id="addedActionsList" class="added-actions">
+                        <!-- Items like: [Add Member: Bob] [X] -->
+                    </div>
+
                     <div class="action-inputs">
                         <select id="actionType">
                             <option value="">Select Action Type</option>
                             <option value="addMember">Add Member</option>
+                            <option value="postMessage">Post Message</option>
+                            <option value="addProposal">Add Proposal (Remote)</option>
                             <option value="electDelegate">Elect Delegate</option>
-                            <option value="addProposal">Add Proposal</option>
-                            <option value="castVote">Cast Vote</option>
+                            <!-- Future: electDelegate, etc -->
                         </select>
 
                         <!-- Dynamic fields based on action type -->
-                        <div id="actionFields" class="hidden">
+                        <div id="actionFields" class="dynamic-inputs">
                             <!-- Fields will be dynamically added here -->
                         </div>
 
-                        <button type="button" id="addAction">+ Add</button>
+                        <button type="button" id="addAction" style="display:none;">+ Add Action</button>
                     </div>
                 </div>
 
                 <div class="modal-buttons">
                     <button type="submit">Create Proposal</button>
-                    <button type="button" onclick="closeProposalModal()">Cancel</button>
+                    <button type="button" onclick="window.closeProposalModal()">Cancel</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Delegate Modal -->
+    <div id="delegateModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h2>Delegate Your Power</h2>
+            <p style="color:#666; margin-bottom:24px;">Your vote will automatically follow your delegate unless you vote
+                manually.</p>
+
+            <div id="delegateList" class="delegate-list">
+                <!-- Populated by JS -->
+            </div>
+
+            <div class="modal-buttons" style="margin-top:24px;">
+                <button type="button" onclick="window.closeDelegateModal()">Cancel</button>
+            </div>
         </div>
     </div>
 

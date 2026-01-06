@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
 :root {
     --green: #E0FFE0;
     /* Lighter pastel green */
@@ -464,12 +466,321 @@ input:checked+.slider:before {
     font-size: 18px;
 }
 
-.stat-label {
-    color: #666;
+/* ... existing styles ... */
+
+/* =========================================
+   COCKPIT LAYOUT & IDENTITY BAR
+   ========================================= */
+
+
+
+:root {
+    --cockpit-col-left: 280px;
+    --cockpit-col-right: 320px;
+    --bg-app: #f5f7fa;
+    --bg-panel: #ffffff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #666;
+    --border-color: #e0e0e0;
 }
 
-.stat-value {
-    font-weight: bold;
-    color: #333;
+body {
+    font-family: 'Inter', sans-serif;
+    /* Update font */
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    /* Main scroll happens in center col */
+}
+
+/* --- Identity Bar (Top) --- */
+.identity-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px;
+    background: white;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    height: 70px;
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+.identity-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.council-brand {
     font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.identity-center {
+    /* Space for potential global search or status */
+}
+
+.identity-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.user-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    line-height: 1.2;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.user-power {
+    font-size: 12px;
+    color: var(--toggle-green);
+    /* Use existing var */
+    font-weight: 500;
+}
+
+.btn-delegate {
+    background: transparent;
+    border: 1px solid var(--toggle-green);
+    color: var(--toggle-green);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-delegate:hover {
+    background: var(--toggle-green);
+    color: white;
+}
+
+/* --- 3-Column Grid Stage --- */
+.cockpit-stage {
+    display: grid;
+    grid-template-columns: var(--cockpit-col-left) 1fr var(--cockpit-col-right);
+    flex: 1;
+    overflow: hidden;
+    /* Columns scroll independently */
+    background: var(--bg-app);
+}
+
+/* --- Left: The Network --- */
+.panel-network {
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border-color);
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.icon-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #666;
+    padding: 0 4px;
+}
+
+.icon-btn:hover {
+    color: #000;
+}
+
+.panel-header {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.member-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.member-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.member-item:hover {
+    background: #f0f0f0;
+}
+
+.member-item.active {
+    background: #e0f0ff;
+    border-left: 3px solid #007bff;
+}
+
+.member-avatar {
+    width: 32px;
+    height: 32px;
+    background: #e0e0e0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #666;
+    margin-right: 12px;
+}
+
+.member-info {
+    flex: 1;
+}
+
+.member-name {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.member-sub {
+    font-size: 12px;
+    color: #888;
+}
+
+/* --- Center: The Work (Proposals) --- */
+.panel-work {
+    padding: 32px 48px;
+    overflow-y: auto;
+    /* Center the cards */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Override existing .proposals format for this layout */
+.proposals {
+    width: 100%;
+    max-width: 800px;
+    padding: 0;
+    /* Remove double padding from existing css since parent handles it */
+}
+
+/* Fab button adjustment */
+.add-proposal {
+    position: fixed;
+    bottom: 32px;
+    right: 350px;
+    /* Offset from right column */
+    z-index: 20;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Right: The Feed --- */
+.panel-feed {
+    background: var(--bg-panel);
+    border-left: 1px solid var(--border-color);
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.feed-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.feed-time {
+    font-size: 11px;
+    color: #999;
+    margin-bottom: 4px;
+}
+
+.feed-content {
+    color: #333;
+}
+
+.feed-system {
+    color: #007bff;
+    font-weight: 500;
+}
+
+/* Fix sticky header interference */
+.header {
+    position: static;
+    box-shadow: none;
+    padding: 0;
+    background: transparent;
+    margin: 0;
+    border: none;
+}
+
+/* Refactor the old header controls into the identity bar or remove */
+.delegate-btn {
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.member-item:hover .delegate-btn {
+    background: var(--toggle-green);
+    color: white;
+    border-color: var(--toggle-green);
+}
+
+/* Proposal Modal Styles */
+.added-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.added-action-item {
+    background: #f5f5f5;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #eee;
+}
+
+.remove-action {
+    color: #ff4d4d;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 8px;
+}
+
+.dynamic-inputs {
+    margin: 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.dynamic-inputs input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
 }

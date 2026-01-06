@@ -6,14 +6,19 @@ export type { Action, VoteDecision };
 export type ProposalStatus = ZodProposalStatus;
 
 // Basic info interfaces (passive data structures)
+export interface IPublicIdentity {
+    getName(): Promise<string>;
+}
+
 export interface MemberInfo {
     name: string;
     votingPower: number;
+    identity: IPublicIdentity; // The Capability
 }
 
 export interface ProposalInfo {
     description: string;
-    // We can add more metadata here that doesn't change often
+    actions: Action[];
 }
 
 // RPC Interfaces
